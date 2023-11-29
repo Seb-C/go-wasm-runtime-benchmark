@@ -55,19 +55,3 @@ func initWasmTime(b *testing.B) (
 
 	return add, fibonacci, onClose
 }
-
-func BenchmarkWasmTime(b *testing.B) {
-	add, fibonacci, onClose := initWasmTime(b)
-	defer onClose()
-
-	b.Run("add", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_ = add(1, 2)
-		}
-	})
-	b.Run("fibonacci", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_ = fibonacci(42)
-		}
-	})
-}

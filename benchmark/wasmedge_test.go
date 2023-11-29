@@ -5,16 +5,18 @@ import (
 	"testing"
 )
 
-func BenchmarkWasmEdge(b *testing.B) {
+func initWasmEdge(b *testing.B) (
+	add func(x, y int64) int64,
+	fibonacci func(x int64) int64,
+	onClose func(),
+) {
 	wasmFile := getWasmFile(b)
 
 	wasmedge.SetLogErrorLevel()
 
 	config := wasmedge.NewConfigure(wasmedge.WASI)
-	defer config.Release()
 
 	vm := wasmedge.NewVMWithConfig(config)
-	defer vm.Release()
 
 	if err := vm.LoadWasmBuffer(wasmFile); err != nil {
 		b.Error("Failed to load wasm file:", err)
@@ -26,18 +28,50 @@ func BenchmarkWasmEdge(b *testing.B) {
 		b.Error("Failed to instantiate wasm file:", err)
 	}
 
-	function := vm.GetActiveModule().FindFunction(functionName)
-	if function == nil {
-		b.Error("Function not found")
-		return
+	add = func(x, y int64) int64 {
+		result, err := vm.Execute(addFunctionName, x, y)
+		if err != nil {
+			b.Error("Failed to call add function:", err)
+		}
+
+		if len(result) != 1 {
+			b.Errorf("Expected 1 return param, got %d: %s", len(result), err)
+		}
+
+		return result[0].(int64)
+	}
+	fibonacci = func(x int64) int64 {
+		result, err := vm.Execute(fibonacciFunctionName, x)
+		if err != nil {
+			b.Error("Failed to call fibonacci function:", err)
+		}
+
+		if len(result) != 1 {
+			b.Errorf("Expected 1 return param, got %d: %s", len(result), err)
+		}
+
+		return result[0].(int64)
+	}
+	onClose = func() {
+		vm.Release()
+		config.Release()
 	}
 
-	b.Run("wasmedge", func(b *testing.B) {
+	return add, fibonacci, onClose
+}
+
+func BenchmarkWasmEdge(b *testing.B) {
+	add, fibonacci, onClose := initWasmEdge(b)
+	defer onClose()
+
+	b.Run("add", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_, err := vm.Execute(functionName, 1, 2)
-			if err != nil {
-				b.Error("Failed to call function:", err)
-			}
+			_ = add(1, 2)
+		}
+	})
+	b.Run("fibonacci", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = fibonacci(42)
 		}
 	})
 }

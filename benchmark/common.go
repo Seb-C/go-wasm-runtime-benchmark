@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-const functionName = "add"
+const addFunctionName = "add"
+const fibonacciFunctionName = "fibonacci"
 
 func getWasmFile(b *testing.B) []byte {
 	b.Helper()

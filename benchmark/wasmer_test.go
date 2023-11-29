@@ -5,37 +5,74 @@ import (
 	"testing"
 )
 
-func BenchmarkWasmer(b *testing.B) {
+func initWasmer(b *testing.B) (
+	add func(x, y int64) int64,
+	fibonacci func(x int64) int64,
+	onClose func(),
+) {
 	wasmFile := getWasmFile(b)
 
 	engine := wasmer.NewEngine()
 	store := wasmer.NewStore(engine)
-	defer store.Close()
 
 	module, err := wasmer.NewModule(store, wasmFile)
 	if err != nil {
 		b.Error("Failed to create module:", err)
 	}
-	defer module.Close()
 
 	importObject := wasmer.NewImportObject()
 	instance, err := wasmer.NewInstance(module, importObject)
 	if err != nil {
 		b.Error("Failed to create instance:", err)
 	}
-	defer instance.Close()
 
-	function, err := instance.Exports.GetFunction(functionName)
+	addFunction, err := instance.Exports.GetFunction(addFunctionName)
 	if err != nil {
-		b.Error("Could not find function:", err)
+		b.Error("Could not find add function:", err)
 	}
 
-	b.Run("wasmer", func(b *testing.B) {
+	fibonacciFunction, err := instance.Exports.GetFunction(fibonacciFunctionName)
+	if err != nil {
+		b.Error("Could not find fibonacci function:", err)
+	}
+
+	add = func(x, y int64) int64 {
+		result, err := addFunction(x, y)
+		if err != nil {
+			b.Error("Failed to call add function:", err)
+		}
+
+		return result.(int64)
+	}
+	fibonacci = func(x int64) int64 {
+		result, err := fibonacciFunction(x)
+		if err != nil {
+			b.Error("Failed to call fibonacci function:", err)
+		}
+
+		return result.(int64)
+	}
+	onClose = func() {
+		defer instance.Close()
+		defer module.Close()
+		defer store.Close()
+	}
+
+	return add, fibonacci, onClose
+}
+
+func BenchmarkWasmer(b *testing.B) {
+	add, fibonacci, onClose := initWasmer(b)
+	defer onClose()
+
+	b.Run("add", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_, err := function(1, 2)
-			if err != nil {
-				b.Error("Failed to call function:", err)
-			}
+			_ = add(1, 2)
+		}
+	})
+	b.Run("fibonacci", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = fibonacci(42)
 		}
 	})
 }

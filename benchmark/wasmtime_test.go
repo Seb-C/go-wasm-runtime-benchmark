@@ -5,7 +5,11 @@ import (
 	"testing"
 )
 
-func BenchmarkWasmTime(b *testing.B) {
+func initWasmTime(b *testing.B) (
+	add func(x, y int64) int64,
+	fibonacci func(x int64) int64,
+	onClose func(),
+) {
 	wasmFile := getWasmFile(b)
 
 	store := wasmtime.NewStore(wasmtime.NewEngine())
@@ -13,28 +17,57 @@ func BenchmarkWasmTime(b *testing.B) {
 	module, err := wasmtime.NewModule(store.Engine, wasmFile)
 	if err != nil {
 		b.Error("Failed to create wasmtime module:", err)
-		return
 	}
 
 	instance, err := wasmtime.NewInstance(store, module, nil)
 	if err != nil {
 		b.Error("Failed to create wasmtime instance:", err)
-		return
 	}
 
-	function := instance.GetFunc(store, functionName)
-	if function == nil {
-		b.Error("Function not found")
-		return
+	addFunction := instance.GetFunc(store, addFunctionName)
+	if addFunction == nil {
+		b.Error("Add function not found")
 	}
 
-	b.Run("wasmtime", func(b *testing.B) {
+	fibonacciFunction := instance.GetFunc(store, fibonacciFunctionName)
+	if fibonacciFunction == nil {
+		b.Error("Fibonacci function not found")
+	}
+
+	add = func(x, y int64) int64 {
+		result, err := addFunction.Call(store, x, y)
+		if err != nil {
+			b.Error("Failed to call add function:", err)
+		}
+
+		return result.(int64)
+
+	}
+	fibonacci = func(x int64) int64 {
+		result, err := fibonacciFunction.Call(store, x)
+		if err != nil {
+			b.Error("Failed to call fibonacci function:", err)
+		}
+
+		return result.(int64)
+	}
+	onClose = func() {}
+
+	return add, fibonacci, onClose
+}
+
+func BenchmarkWasmTime(b *testing.B) {
+	add, fibonacci, onClose := initWasmTime(b)
+	defer onClose()
+
+	b.Run("add", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_, err := function.Call(store, 1, 2)
-			if err != nil {
-				b.Error("Failed to call function:", err)
-				return
-			}
+			_ = add(1, 2)
+		}
+	})
+	b.Run("fibonacci", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = fibonacci(42)
 		}
 	})
 }

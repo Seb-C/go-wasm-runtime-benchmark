@@ -1,7 +1,7 @@
 MAKEFLAGS += --always-make
 .DEFAULT_GOAL := all
 
-all: rust-wasm benchmark
+all: rust-wasm tinygo-wasi benchmark
 
 rust-wasm:
 	docker build --tag go-wasm-runtime-benchmark:rust-wasm -f ./rust-wasm/Dockerfile .

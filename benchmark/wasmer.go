@@ -1,8 +1,9 @@
 package benchmark
 
 import (
-	wasmer "github.com/wasmerio/wasmer-go/wasmer"
 	"testing"
+
+	wasmer "github.com/wasmerio/wasmer-go/wasmer"
 )
 
 func initWasmer(tb testing.TB, wasmFile []byte) (

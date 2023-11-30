@@ -10,14 +10,20 @@ func initWasmTime(tb testing.TB, wasmFile []byte) (
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	store := wasmtime.NewStore(wasmtime.NewEngine())
+	engine := wasmtime.NewEngine()
+	store := wasmtime.NewStore(engine)
+	linker := wasmtime.NewLinker(engine)
 
-	module, err := wasmtime.NewModule(store.Engine, wasmFile)
+	module, err := wasmtime.NewModule(engine, wasmFile)
 	if err != nil {
 		tb.Error("Failed to create wasmtime module:", err)
 	}
 
-	instance, err := wasmtime.NewInstance(store, module, nil)
+	if err := linker.DefineWasi(); err != nil {
+		tb.Error("Failed to define wasi:", err)
+	}
+
+	instance, err := linker.Instantiate(store, module)
 	if err != nil {
 		tb.Error("Failed to create wasmtime instance:", err)
 	}

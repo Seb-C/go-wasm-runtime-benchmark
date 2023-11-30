@@ -2,8 +2,10 @@ package benchmark
 
 import (
 	"context"
-	"github.com/tetratelabs/wazero"
 	"testing"
+
+	"github.com/tetratelabs/wazero"
+	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
 func initWazero(tb testing.TB, wasmFile []byte) (
@@ -13,6 +15,8 @@ func initWazero(tb testing.TB, wasmFile []byte) (
 ) {
 	ctx := context.Background()
 	runtime := wazero.NewRuntime(ctx)
+
+	wasi_snapshot_preview1.MustInstantiate(ctx, runtime)
 
 	module, err := runtime.Instantiate(ctx, wasmFile)
 	if err != nil {

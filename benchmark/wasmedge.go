@@ -1,8 +1,10 @@
 package benchmark
 
 import (
-	"github.com/second-state/WasmEdge-go/wasmedge"
+	"os"
 	"testing"
+
+	"github.com/second-state/WasmEdge-go/wasmedge"
 )
 
 func initWasmEdge(tb testing.TB, wasmFile []byte) (
@@ -14,6 +16,9 @@ func initWasmEdge(tb testing.TB, wasmFile []byte) (
 
 	config := wasmedge.NewConfigure(wasmedge.WASI)
 	vm := wasmedge.NewVMWithConfig(config)
+
+	var wasi = vm.GetImportModule(wasmedge.WASI)
+	wasi.InitWasi(os.Args[1:], os.Environ(), []string{".:."})
 
 	if err := vm.LoadWasmBuffer(wasmFile); err != nil {
 		tb.Error("Failed to load wasm file:", err)

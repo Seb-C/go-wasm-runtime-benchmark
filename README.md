@@ -33,20 +33,6 @@ Benchmark/lifecycle/wasmer-12                309           3820975 ns/op
 Benchmark/lifecycle/wasmtime-12              309           3772255 ns/op
 ```
 
-## How to run it?
-
-First, build the wasm app:
-
-```
-docker run --rm -v "$PWD/rust-wasm":/app -it $(docker build -q -f ./rust-wasm/Dockerfile .)
-```
-
-Second, run the benchmark:
-
-```
-docker build --tag go-wasm-runtime-benchmark -f ./benchmark/Dockerfile . && docker run go-wasm-runtime-benchmark
-```
-
 ## Why Rust instead of Go in the wasm file?
 
 Because at the moment, there is no Go compiler that can output pure wasm and that supports both importing and exporting.

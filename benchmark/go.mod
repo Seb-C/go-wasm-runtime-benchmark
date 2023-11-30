@@ -1,4 +1,4 @@
-module github.com/Seb-C/go-wasm-runtime-benchmark
+module github.com/Seb-C/go-wasm-runtime-benchmark/benchmark
 
 go 1.21
 

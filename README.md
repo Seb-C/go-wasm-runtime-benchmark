@@ -44,7 +44,7 @@ docker run --rm -v "$PWD/rust-wasm":/app -it $(docker build -q -f ./rust-wasm/Do
 Second, run the benchmark:
 
 ```
-docker build --tag go-wasm-runtime-benchmark -f ./docker/benchmark.Dockerfile . && docker run go-wasm-runtime-benchmark
+docker build --tag go-wasm-runtime-benchmark -f ./benchmark/Dockerfile . && docker run go-wasm-runtime-benchmark
 ```
 
 ## Why Rust instead of Go in the wasm file?

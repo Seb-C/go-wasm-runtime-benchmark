@@ -38,7 +38,7 @@ Benchmark/lifecycle/wasmtime-12              309           3772255 ns/op
 First, build the wasm app:
 
 ```
-docker run --rm -v "$PWD/rust-wasm":/app -it $(docker build -q -f ./docker/build-wasm.Dockerfile .)
+docker run --rm -v "$PWD/rust-wasm":/app -it $(docker build -q -f ./rust-wasm/Dockerfile .)
 ```
 
 Second, run the benchmark:

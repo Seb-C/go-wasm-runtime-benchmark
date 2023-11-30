@@ -10,6 +10,10 @@ Especially, this does not include WASI or WASIX.
 
 ## Result
 
+- `add` benchmarks a function that adds two numbers
+- `fibonacci` is self-explanatory
+- `lifecycle` benchmarks the startup and shutdown (together) times of the runtime
+
 ```
 cpu: AMD Ryzen 5 5600 6-Core Processor              
 

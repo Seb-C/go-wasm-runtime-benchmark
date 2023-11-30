@@ -15,7 +15,6 @@ func initWasmEdge(tb testing.TB) (
 	wasmedge.SetLogErrorLevel()
 
 	config := wasmedge.NewConfigure(wasmedge.WASI)
-
 	vm := wasmedge.NewVMWithConfig(config)
 
 	if err := vm.LoadWasmBuffer(wasmFile); err != nil {
@@ -28,8 +27,13 @@ func initWasmEdge(tb testing.TB) (
 		tb.Error("Failed to instantiate wasm file:", err)
 	}
 
+	executor := vm.GetExecutor()
+	module := vm.GetActiveModule()
+	addFunction := module.FindFunction(addFunctionName)
+	fibonacciFunction := module.FindFunction(fibonacciFunctionName)
+
 	add = func(x, y int64) int64 {
-		result, err := vm.Execute(addFunctionName, x, y)
+		result, err := executor.Invoke(addFunction, x, y)
 		if err != nil {
 			tb.Error("Failed to call add function:", err)
 		}
@@ -41,7 +45,7 @@ func initWasmEdge(tb testing.TB) (
 		return result[0].(int64)
 	}
 	fibonacci = func(x int64) int64 {
-		result, err := vm.Execute(fibonacciFunctionName, x)
+		result, err := executor.Invoke(fibonacciFunction, x)
 		if err != nil {
 			tb.Error("Failed to call fibonacci function:", err)
 		}

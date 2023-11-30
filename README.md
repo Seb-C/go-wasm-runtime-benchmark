@@ -15,32 +15,32 @@ There is one benchmark with pure WASM written in Rust, and one in Go that includ
 ```
 cpu: AMD Ryzen 5 5600 6-Core Processor              
 
-Benchmark/rust-wasm/add/wasmedge-12              1500884               881.3 ns/op
-Benchmark/rust-wasm/add/wasmer-12                1000000              1036 ns/op
-Benchmark/rust-wasm/add/wasmtime-12               442851              2581 ns/op
-Benchmark/rust-wasm/add/wazero-12               12850506                92.53 ns/op
+Benchmark/rust-wasm/add/wasmedge-12              1964247               676.7 ns/op
+Benchmark/rust-wasm/add/wasmer-12                1341111               835.6 ns/op
+Benchmark/rust-wasm/add/wasmtime-12               683862              1903 ns/op
+Benchmark/rust-wasm/add/wazero-12               17825775                57.03 ns/op
 
-Benchmark/rust-wasm/fibonacci/wasmedge-12         272600              4753 ns/op
-Benchmark/rust-wasm/fibonacci/wasmer-12          1000000              1031 ns/op
-Benchmark/rust-wasm/fibonacci/wasmtime-12         573050              2122 ns/op
-Benchmark/rust-wasm/fibonacci/wazero-12          7266033               145.0 ns/op
+Benchmark/rust-wasm/fibonacci/wasmedge-12         251000              4651 ns/op
+Benchmark/rust-wasm/fibonacci/wasmer-12          1446950               779.5 ns/op
+Benchmark/rust-wasm/fibonacci/wasmtime-12         638666              1978 ns/op
+Benchmark/rust-wasm/fibonacci/wazero-12         12426373               101.4 ns/op
 
-Benchmark/rust-wasm/lifecycle/wasmedge-12           3230            363073 ns/op
-Benchmark/rust-wasm/lifecycle/wasmer-12              318           3733105 ns/op
-Benchmark/rust-wasm/lifecycle/wasmtime-12            270           4231169 ns/op
-Benchmark/rust-wasm/lifecycle/wazero-12              388           4055002 ns/op
+Benchmark/rust-wasm/lifecycle/wasmedge-12           2926            367483 ns/op
+Benchmark/rust-wasm/lifecycle/wasmer-12              309           3842560 ns/op
+Benchmark/rust-wasm/lifecycle/wasmtime-12            279           4226500 ns/op
+Benchmark/rust-wasm/lifecycle/wazero-12              369           2926465 ns/op
 
-Benchmark/tinygo-wasi/add/wasmedge-12            1305934               882.9 ns/op
-Benchmark/tinygo-wasi/add/wasmtime-12             515164              2590 ns/op
-Benchmark/tinygo-wasi/add/wazero-12             12304556                85.12 ns/op
+Benchmark/tinygo-wasi/add/wasmedge-12            1741168               704.5 ns/op
+Benchmark/tinygo-wasi/add/wasmtime-12             582134              1914 ns/op
+Benchmark/tinygo-wasi/add/wazero-12             19349671                58.45 ns/op
 
-Benchmark/tinygo-wasi/fibonacci/wasmedge-12        10000            129466 ns/op
-Benchmark/tinygo-wasi/fibonacci/wasmtime-12       375784              3345 ns/op
-Benchmark/tinygo-wasi/fibonacci/wazero-12         136599              8488 ns/op
+Benchmark/tinygo-wasi/fibonacci/wasmedge-12        95944             12645 ns/op
+Benchmark/tinygo-wasi/fibonacci/wasmtime-12       694854              1937 ns/op
+Benchmark/tinygo-wasi/fibonacci/wazero-12        5007806               212.2 ns/op
 
-Benchmark/tinygo-wasi/lifecycle/wasmedge-12         2462            407246 ns/op
-Benchmark/tinygo-wasi/lifecycle/wasmtime-12          210           5703182 ns/op
-Benchmark/tinygo-wasi/lifecycle/wazero-12            216           5212543 ns/op
+Benchmark/tinygo-wasi/lifecycle/wasmedge-12          510           2285191 ns/op
+Benchmark/tinygo-wasi/lifecycle/wasmtime-12           27          39080134 ns/op
+Benchmark/tinygo-wasi/lifecycle/wazero-12             38          33822371 ns/op
 ```
 
 ## TODO

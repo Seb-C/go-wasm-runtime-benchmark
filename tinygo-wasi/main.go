@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {}
 
 //export add
@@ -7,17 +9,25 @@ func add(x int64, y int64) int64 {
 	return x + y
 }
 
-// From https://www.thepolyglotdeveloper.com/2016/12/fibonacci-sequence-printed-golang/
 //export fibonacci
 func fibonacci(n int64) int64 {
-	f := make([]int64, n+1, n+2)
-	if n < 2 {
-		f = f[0:2]
+	if n < 0 {
+		panic(fmt.Errorf("%d is negative!", n))
+	} else if n == 0 {
+		panic("zero is not a right argument to fibonacci()!")
+	} else if n == 1 {
+		return 1;
 	}
-	f[0] = 0
-	f[1] = 1
-	for i := int64(2); i <= n; i++ {
-		f[i] = f[i-1] + f[i-2]
+
+	var sum int64 = 0
+	var last int64 = 0
+	var curr int64 = 1
+	var i int64
+	for i = 1; i < n; i++ {
+		sum = last + curr
+		last = curr
+		curr = sum
 	}
-	return f[n]
+
+	return sum
 }

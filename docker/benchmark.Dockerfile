@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt-get install gcc
 RUN curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | bash -s -- -v 0.13.4
 
-COPY ./target ./target
+COPY ./rust-wasm/target ./rust-wasm/target
 COPY ./go.mod ./go.mod
 COPY ./go.sum ./go.sum
 

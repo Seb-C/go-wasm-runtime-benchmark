@@ -38,7 +38,7 @@ Benchmark/lifecycle/wasmtime-12              309           3772255 ns/op
 First, build the wasm app:
 
 ```
-docker run --rm -v "$PWD":/app -it $(docker build -q -f ./docker/build-wasm.Dockerfile .)
+docker run --rm -v "$PWD/rust-wasm":/app -it $(docker build -q -f ./docker/build-wasm.Dockerfile .)
 ```
 
 Second, run the benchmark:
@@ -57,5 +57,4 @@ Because at the moment, there is no Go compiler that can output pure wasm and tha
 
 - Benchmark imported functions
 - Benchmark memory accesses
-- Move rust code in a sub-directory
 - Compare tinygo as well (with wasi?)

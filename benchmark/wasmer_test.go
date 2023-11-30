@@ -5,41 +5,41 @@ import (
 	"testing"
 )
 
-func initWasmer(b *testing.B) (
+func initWasmer(tb testing.TB) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	wasmFile := getWasmFile(b)
+	wasmFile := getWasmFile(tb)
 
 	engine := wasmer.NewEngine()
 	store := wasmer.NewStore(engine)
 
 	module, err := wasmer.NewModule(store, wasmFile)
 	if err != nil {
-		b.Error("Failed to create module:", err)
+		tb.Error("Failed to create module:", err)
 	}
 
 	importObject := wasmer.NewImportObject()
 	instance, err := wasmer.NewInstance(module, importObject)
 	if err != nil {
-		b.Error("Failed to create instance:", err)
+		tb.Error("Failed to create instance:", err)
 	}
 
 	addFunction, err := instance.Exports.GetFunction(addFunctionName)
 	if err != nil {
-		b.Error("Could not find add function:", err)
+		tb.Error("Could not find add function:", err)
 	}
 
 	fibonacciFunction, err := instance.Exports.GetFunction(fibonacciFunctionName)
 	if err != nil {
-		b.Error("Could not find fibonacci function:", err)
+		tb.Error("Could not find fibonacci function:", err)
 	}
 
 	add = func(x, y int64) int64 {
 		result, err := addFunction(x, y)
 		if err != nil {
-			b.Error("Failed to call add function:", err)
+			tb.Error("Failed to call add function:", err)
 		}
 
 		return result.(int64)
@@ -47,7 +47,7 @@ func initWasmer(b *testing.B) (
 	fibonacci = func(x int64) int64 {
 		result, err := fibonacciFunction(x)
 		if err != nil {
-			b.Error("Failed to call fibonacci function:", err)
+			tb.Error("Failed to call fibonacci function:", err)
 		}
 
 		return result.(int64)

@@ -57,3 +57,5 @@ Because at the moment, there is no Go compiler that can output pure wasm and tha
 
 - Benchmark imported functions
 - Benchmark memory accesses
+- Move rust code in a sub-directory
+- Compare tinygo as well (with wasi?)

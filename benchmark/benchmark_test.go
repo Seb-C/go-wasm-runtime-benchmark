@@ -2,9 +2,11 @@ package benchmark
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var benchmarks = map[string]func (b *testing.B) (
+var runtimes = map[string]func (tb testing.TB) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
@@ -15,11 +17,35 @@ var benchmarks = map[string]func (b *testing.B) (
 	"wazero": initWazero,
 }
 
+func Test(t *testing.T) {
+	t.Run("add", func(t *testing.T) {
+		for name, initRuntime := range runtimes {
+			add, _, onClose := initRuntime(t)
+			t.Run(name, func(t *testing.T) {
+				assert.Equal(t, int64(3), add(1, 2))
+				assert.Equal(t, int64(-100), add(23, -123))
+			})
+			onClose()
+		}
+	})
+
+	t.Run("fibonacci", func(t *testing.T) {
+		for name, initRuntime := range runtimes {
+			_, fibonacci, onClose := initRuntime(t)
+			t.Run(name, func(t *testing.T) {
+				assert.Equal(t, int64(1), fibonacci(1))
+				assert.Equal(t, int64(55), fibonacci(10))
+			})
+			onClose()
+		}
+	})
+}
+
 func Benchmark(b *testing.B) {
 	b.Run("add", func(b *testing.B) {
-		for benchmarkName, initBenchmark := range benchmarks {
-			add, _, onClose := initBenchmark(b)
-			b.Run(benchmarkName, func(b *testing.B) {
+		for name, initRuntime := range runtimes {
+			add, _, onClose := initRuntime(b)
+			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					_ = add(1, 2)
 				}
@@ -29,9 +55,9 @@ func Benchmark(b *testing.B) {
 	})
 
 	b.Run("fibonacci", func(b *testing.B) {
-		for benchmarkName, initBenchmark := range benchmarks {
-			_, fibonacci, onClose := initBenchmark(b)
-			b.Run(benchmarkName, func(b *testing.B) {
+		for name, initRuntime := range runtimes {
+			_, fibonacci, onClose := initRuntime(b)
+			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					_ = fibonacci(123)
 				}
@@ -41,10 +67,10 @@ func Benchmark(b *testing.B) {
 	})
 
 	b.Run("lifecycle", func(b *testing.B) {
-		for benchmarkName, initBenchmark := range benchmarks {
-			b.Run(benchmarkName, func(b *testing.B) {
+		for name, initRuntime := range runtimes {
+			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
-					_, _, onClose := initBenchmark(b)
+					_, _, onClose := initRuntime(b)
 					onClose()
 				}
 			})

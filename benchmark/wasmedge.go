@@ -5,13 +5,11 @@ import (
 	"testing"
 )
 
-func initWasmEdge(tb testing.TB) (
+func initWasmEdge(tb testing.TB, wasmFile []byte) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	wasmFile := getWasmFile(tb)
-
 	wasmedge.SetLogErrorLevel()
 
 	config := wasmedge.NewConfigure(wasmedge.WASI)

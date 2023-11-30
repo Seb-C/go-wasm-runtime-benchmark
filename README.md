@@ -44,3 +44,4 @@ Because at the moment, there is no Go compiler that can output pure wasm and tha
 - Benchmark imported functions
 - Benchmark memory accesses
 - Compare tinygo as well (with wasi?)
+- Update the benchmark results

@@ -1,12 +1,18 @@
 package benchmark
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var runtimes = map[string]func (tb testing.TB) (
+const addFunctionName = "add"
+const fibonacciFunctionName = "fibonacci"
+
+const wasmFilePath = "./rust.wasm"
+
+var runtimes = map[string]func (tb testing.TB, wasmFile []byte) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
@@ -18,9 +24,14 @@ var runtimes = map[string]func (tb testing.TB) (
 }
 
 func Test(t *testing.T) {
+	wasmFile, err := os.ReadFile(wasmFilePath)
+	if err != nil {
+		t.Error("Failed to get wasm file:", err)
+	}
+
 	t.Run("add", func(t *testing.T) {
 		for name, initRuntime := range runtimes {
-			add, _, onClose := initRuntime(t)
+			add, _, onClose := initRuntime(t, wasmFile)
 			t.Run(name, func(t *testing.T) {
 				assert.Equal(t, int64(3), add(1, 2))
 				assert.Equal(t, int64(-100), add(23, -123))
@@ -31,7 +42,7 @@ func Test(t *testing.T) {
 
 	t.Run("fibonacci", func(t *testing.T) {
 		for name, initRuntime := range runtimes {
-			_, fibonacci, onClose := initRuntime(t)
+			_, fibonacci, onClose := initRuntime(t, wasmFile)
 			t.Run(name, func(t *testing.T) {
 				assert.Equal(t, int64(1), fibonacci(1))
 				assert.Equal(t, int64(55), fibonacci(10))
@@ -42,9 +53,14 @@ func Test(t *testing.T) {
 }
 
 func Benchmark(b *testing.B) {
+	wasmFile, err := os.ReadFile(wasmFilePath)
+	if err != nil {
+		b.Error("Failed to get wasm file:", err)
+	}
+
 	b.Run("add", func(b *testing.B) {
 		for name, initRuntime := range runtimes {
-			add, _, onClose := initRuntime(b)
+			add, _, onClose := initRuntime(b, wasmFile)
 			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					_ = add(1, 2)
@@ -56,7 +72,7 @@ func Benchmark(b *testing.B) {
 
 	b.Run("fibonacci", func(b *testing.B) {
 		for name, initRuntime := range runtimes {
-			_, fibonacci, onClose := initRuntime(b)
+			_, fibonacci, onClose := initRuntime(b, wasmFile)
 			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
 					_ = fibonacci(123)
@@ -70,7 +86,7 @@ func Benchmark(b *testing.B) {
 		for name, initRuntime := range runtimes {
 			b.Run(name, func(b *testing.B) {
 				for i := 0; i < b.N; i++ {
-					_, _, onClose := initRuntime(b)
+					_, _, onClose := initRuntime(b, wasmFile)
 					onClose()
 				}
 			})

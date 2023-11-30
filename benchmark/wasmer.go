@@ -5,13 +5,11 @@ import (
 	"testing"
 )
 
-func initWasmer(tb testing.TB) (
+func initWasmer(tb testing.TB, wasmFile []byte) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	wasmFile := getWasmFile(tb)
-
 	engine := wasmer.NewEngine()
 	store := wasmer.NewStore(engine)
 

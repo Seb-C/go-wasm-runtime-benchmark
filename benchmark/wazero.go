@@ -6,13 +6,11 @@ import (
 	"testing"
 )
 
-func initWazero(tb testing.TB) (
+func initWazero(tb testing.TB, wasmFile []byte) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	wasmFile := getWasmFile(tb)
-
 	ctx := context.Background()
 	runtime := wazero.NewRuntime(ctx)
 

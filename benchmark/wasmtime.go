@@ -5,13 +5,11 @@ import (
 	"testing"
 )
 
-func initWasmTime(tb testing.TB) (
+func initWasmTime(tb testing.TB, wasmFile []byte) (
 	add func(x, y int64) int64,
 	fibonacci func(x int64) int64,
 	onClose func(),
 ) {
-	wasmFile := getWasmFile(tb)
-
 	store := wasmtime.NewStore(wasmtime.NewEngine())
 
 	module, err := wasmtime.NewModule(store.Engine, wasmFile)
